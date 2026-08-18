@@ -10,6 +10,7 @@ from src.ingestion.db import (
     insert_participants,
     mark_puuid_discovered,
     mark_puuid_done,
+    mark_puuid_failed,
     get_pending_puuids,
 )
 
@@ -81,6 +82,7 @@ def crawl(seed_puuids: list[str], region: str = "europe", max_matches: int = 500
             match_ids = get_match_ids(current_puuid, region=region, count=matches_per_player)
         except Exception as e:
             print(f"Failed to get match IDs for {current_puuid[:8]}: {e}")
+            mark_puuid_failed(conn, current_puuid)
             continue
 
         for match_id in match_ids:

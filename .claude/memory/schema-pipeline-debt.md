@@ -23,6 +23,14 @@ Snapshot as of 2026-08-18 (HEAD 7324e30). Update as items are fixed.
   re-checking the rate limit~~ — fixed 2026-08-18: `throttle()` moved inside the loop, called
   once per attempt. Regression-tested in `tests/test_riot_client.py` (verified to fail against
   the pre-fix code via `git stash`).
+- ~~**Stuck-puuid bug**: `crawl()` in `ingest.py` would `continue` past `mark_puuid_done` when
+  `get_match_ids` raised, leaving the puuid `'pending'` forever — `get_pending_puuids` (no
+  `ORDER BY`) would likely hand it straight back, wedging the whole crawl on one permanently
+  failing puuid (banned/deleted account, etc.)~~ — fixed 2026-08-18: added
+  `mark_puuid_failed()` in `db.py` (sets `status = 'failed'`, no schema change needed since
+  `status` is unconstrained `TEXT`), called from that `except` block before `continue`. Not
+  regression-tested — would need a mocked/real-DB test of `crawl()`'s loop, a bigger lift than
+  the throttle fix; tracked under the `ingest.py` line below.
 - **Test coverage**: `transform.py` (extract functions) and `riot_client.py` (throttle-per-retry
   behavior only, via mocked `requests`/`throttle`) are unit-tested. `db.py`, `ingest.py`,
   `seed_reference_data.py` have none. Note `riot_client.py`'s tests import `config.py`, which

@@ -51,6 +51,15 @@ def mark_puuid_done(conn, puuid: str):
     conn.commit()
     cur.close()
 
+def mark_puuid_failed(conn, puuid: str):
+    cur = conn.cursor()
+    cur.execute(
+        "UPDATE crawl_queue SET status = 'failed' WHERE puuid = %s",
+        (puuid,)
+    )
+    conn.commit()
+    cur.close()
+
 def get_pending_puuids(conn, limit: int = 1000) -> list[str]:
     cur = conn.cursor()
     cur.execute(
