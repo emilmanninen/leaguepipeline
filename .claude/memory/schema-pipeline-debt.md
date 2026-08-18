@@ -7,6 +7,7 @@ metadata:
 
 Snapshot as of 2026-08-18 (HEAD 7324e30). Update as items are fixed.
 
+- ~~**Split schema files**: `crawl_queue` lived in a separate `add_crawl_state.sql`~~ — merged into `schema.sql` 2026-08-18.
 - **Dead tables**: `schema.sql` still defines `timeline_frames`, `timeline_events`,
   `champion_matchups`, `item_win_rates`, but no code populates them — the extraction/insert
   functions for these were removed (commit `428f06e`) without updating the schema.

@@ -72,3 +72,9 @@ CREATE TABLE item_win_rates (
     wins INT NOT NULL DEFAULT 0,
     PRIMARY KEY (item_id, champion_id)
 );
+
+CREATE TABLE crawl_queue (
+    puuid TEXT PRIMARY KEY,
+    status TEXT NOT NULL DEFAULT 'pending',  -- 'pending' or 'done'
+    discovered_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);

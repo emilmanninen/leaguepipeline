@@ -109,6 +109,6 @@ def crawl(seed_puuids: list[str], region: str = "europe", max_matches: int = 500
     print(f"\nCrawl finished. Total matches ingested this run: {total_matches_ingested}")
 
 if __name__ == "__main__":
-    my_puuid = get_puuid("your_riot_id", "1234", region="europe")
+    my_puuid = get_puuid("brandtop", "1234", region="europe")
     crawl(seed_puuids=[my_puuid], max_matches=3000, matches_per_player=100)
 

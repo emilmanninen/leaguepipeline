@@ -12,7 +12,7 @@ that reads the same database directly — see that file for the contract between
 
 - Entry point: `python -m src.ingestion.ingest` (runs `crawl()` in [ingest.py](../../src/ingestion/ingest.py)) — not `crawler.py`, despite what the frontend's README says.
 - Reference-data seeding: `python -m src.ingestion.seed_reference_data` (Data Dragon champions/items) — see [[schema-pipeline-debt]] for a bug that currently breaks this.
-- DB setup requires **both** `schema.sql` and `add_crawl_state.sql` — `crawl_queue` lives in the latter, separate from the main schema file.
+- DB setup: `schema.sql` (single file — `crawl_queue` was previously split into `add_crawl_state.sql`, merged back in 2026-08-18 since it had no FK dependency on the other tables).
 - Queue-mode filtering (`ALLOWED_QUEUE_IDS` in `ingest.py`) intentionally excludes Arena/ARAM/URF — only 5v5 Summoner's Rift modes (400/420/430/440) are tracked, since the schema's role/team assumptions don't fit other modes.
 - Env vars: `RIOT_API_KEY`, `DATABASE_URL` (`.env`, loaded via `python-dotenv`).
 - `riot_client.py`'s throttling (100 req/120s, 0.6s min gap) assumes a personal/dev Riot API key's rate limits — would need adjusting for a production key.
