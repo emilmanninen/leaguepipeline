@@ -12,10 +12,10 @@ MIN_REQUEST_INTERVAL = 0.6  # seconds between requests, keeps pace steady
 HEADERS = {"X-Riot-Token": RIOT_API_KEY}
 
 def get_puuid(game_name: str, tag_line: str, region: str = "europe") -> str:
-    throttle()
     url = f"https://{region}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{game_name}/{tag_line}"
 
     for attempt in range(5):
+        throttle()
         resp = requests.get(url, headers=HEADERS)
         if resp.status_code == 429:
             retry_after = int(resp.headers.get("Retry-After", 5))
@@ -28,10 +28,10 @@ def get_puuid(game_name: str, tag_line: str, region: str = "europe") -> str:
     raise Exception(f"get_puuid failed after 5 retries: {game_name}#{tag_line}")
 
 def get_match_ids(puuid: str, region: str = "europe", count: int = 5) -> list[str]:
-    throttle()
     url = f"https://{region}.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids"
 
     for attempt in range(5):
+        throttle()
         resp = requests.get(url, headers=HEADERS, params={"count": count})
         if resp.status_code == 429:
             retry_after = int(resp.headers.get("Retry-After", 5))
@@ -44,10 +44,10 @@ def get_match_ids(puuid: str, region: str = "europe", count: int = 5) -> list[st
     raise Exception(f"get_match_ids failed after 5 retries: {puuid}")
 
 def get_match(match_id: str, region: str = "europe") -> dict:
-    throttle()
     url = f"https://{region}.api.riotgames.com/lol/match/v5/matches/{match_id}"
 
     for attempt in range(5):
+        throttle()
         resp = requests.get(url, headers=HEADERS)
         if resp.status_code == 429:
             retry_after = int(resp.headers.get("Retry-After", 5))

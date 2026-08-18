@@ -18,7 +18,14 @@ Snapshot as of 2026-08-18 (HEAD 7324e30). Update as items are fixed.
 - **Confirmed bug**: `seed_reference_data.py` calls `seed_items(conn, items)` at the bottom of
   the file, but only `seed_champions` is defined — `python -m src.ingestion.seed_reference_data`
   raises `NameError` every run.
-- **Test coverage**: only `transform.py`'s `extract_match_row`/`extract_participant_rows` are
-  unit-tested. `db.py`, `ingest.py`, `riot_client.py`, `seed_reference_data.py` have none.
+- ~~**Throttle bug**: `riot_client.py`'s `get_puuid`/`get_match_ids`/`get_match` called
+  `throttle()` once before their 5x retry loop, so a 429 retry fired a real HTTP request without
+  re-checking the rate limit~~ — fixed 2026-08-18: `throttle()` moved inside the loop, called
+  once per attempt. Regression-tested in `tests/test_riot_client.py` (verified to fail against
+  the pre-fix code via `git stash`).
+- **Test coverage**: `transform.py` (extract functions) and `riot_client.py` (throttle-per-retry
+  behavior only, via mocked `requests`/`throttle`) are unit-tested. `db.py`, `ingest.py`,
+  `seed_reference_data.py` have none. Note `riot_client.py`'s tests import `config.py`, which
+  hard-fails (`KeyError`) without a `.env` present — untested against a CI environment.
 - **No CI**: no GitHub Actions (or other) workflow in this repo — contrast with
   `leaguefrontend`, which runs tests on every push/PR.
