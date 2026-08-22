@@ -5,10 +5,15 @@ metadata:
   type: project
 ---
 
-Snapshot as of 2026-08-22 (HEAD a313808). Update as items are fixed.
+Snapshot as of 2026-08-22 (HEAD 434e6b5). Update as items are fixed.
 
 ## Fixed
 
+- **Dead tables**: `schema.sql` defined `timeline_frames`, `timeline_events`, `champion_matchups`,
+  `item_win_rates` with no code populating them since their extraction/insert functions were
+  removed (commit `428f06e`) — removed the four `CREATE TABLE` statements from `schema.sql`.
+  Nothing in this repo or `leaguefrontend` referenced them (confirmed via grep and via the
+  frontend's own integration memory).
 - **No lint check**: added `ruff` (`test`→ split into `test`/`lint` extras in `pyproject.toml`,
   pinned `ruff==0.16.4`) and a `ruff check .` step in CI before `pytest`. Surfaced the
   `seed_items` NameError below, which was fixed as part of adding the check rather than
@@ -55,11 +60,6 @@ Snapshot as of 2026-08-22 (HEAD a313808). Update as items are fixed.
 
 ## Open
 
-- **Dead tables**: `schema.sql` still defines `timeline_frames`, `timeline_events`,
-  `champion_matchups`, `item_win_rates`, but no code populates them — the extraction/insert
-  functions for these were removed (commit `428f06e`) without updating the schema. (The
-  leftover `explore.py` scratch script that still imported those deleted functions was
-  removed 2026-08-22 as part of the packaging cleanup.)
 - **Test coverage**: `transform.py` (extract functions) and `riot_client.py` (throttle-per-retry
   behavior only, via mocked `requests`/`throttle`) are unit-tested. `db.py`, `ingest.py`
   (including the stuck-puuid fix above), `seed_reference_data.py` have none.
