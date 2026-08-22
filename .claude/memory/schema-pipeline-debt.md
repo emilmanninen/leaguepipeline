@@ -5,7 +5,7 @@ metadata:
   type: project
 ---
 
-Snapshot as of 2026-08-22. Update as items are fixed.
+Snapshot as of 2026-08-22 (HEAD a313808). Update as items are fixed.
 
 ## Fixed
 
