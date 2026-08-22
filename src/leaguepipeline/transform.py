@@ -1,4 +1,5 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+
 
 def extract_match_row(match_id: str, match_json: dict) -> tuple:
     info = match_json["info"]
@@ -8,7 +9,7 @@ def extract_match_row(match_id: str, match_json: dict) -> tuple:
     patch = f"{version_parts[0]}.{version_parts[1]}"
 
     game_creation_ts = datetime.fromtimestamp(
-        info["gameCreation"] / 1000, tz=timezone.utc
+        info["gameCreation"] / 1000, tz=UTC
     )
 
     return (

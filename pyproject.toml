@@ -11,6 +11,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = ["pytest==9.1.1"]
+lint = ["ruff==0.16.4"]
 
 [build-system]
 requires = ["setuptools>=68"]
@@ -21,3 +22,11 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+# A deliberate starter set, not ruff's much broader current default:
+# pyflakes, pycodestyle errors, import sorting, pyupgrade, bugbear.
+select = ["E", "F", "I", "UP", "B"]
