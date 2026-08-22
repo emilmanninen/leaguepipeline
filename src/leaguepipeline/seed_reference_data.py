@@ -1,6 +1,7 @@
 import logging
 
 import requests
+
 from leaguepipeline.db import get_connection
 
 logger = logging.getLogger(__name__)
@@ -30,6 +31,20 @@ def seed_champions(conn, champions):
             ON CONFLICT (champion_id) DO UPDATE SET name = EXCLUDED.name, riot_id = EXCLUDED.riot_id
             """,
             (champion_id, name, riot_id)
+        )
+    conn.commit()
+    cur.close()
+
+def seed_items(conn, items):
+    cur = conn.cursor()
+    for item_id, name in items:
+        cur.execute(
+            """
+            INSERT INTO items (item_id, name)
+            VALUES (%s, %s)
+            ON CONFLICT (item_id) DO UPDATE SET name = EXCLUDED.name
+            """,
+            (item_id, name)
         )
     conn.commit()
     cur.close()

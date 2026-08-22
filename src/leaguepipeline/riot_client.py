@@ -1,8 +1,10 @@
 import logging
-import requests
-from leaguepipeline.config import RIOT_API_KEY
 import time
 from collections import deque
+
+import requests
+
+from leaguepipeline.config import RIOT_API_KEY
 
 logger = logging.getLogger(__name__)
 

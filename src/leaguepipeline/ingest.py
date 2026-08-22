@@ -1,18 +1,18 @@
 import logging
 
-from leaguepipeline.riot_client import get_match, get_puuid, get_match_ids
-from leaguepipeline.transform import (
-    extract_match_row,
-    extract_participant_rows,
-)
 from leaguepipeline.db import (
     get_connection,
+    get_pending_puuids,
     insert_match,
     insert_participants,
     mark_puuid_discovered,
     mark_puuid_done,
     mark_puuid_failed,
-    get_pending_puuids,
+)
+from leaguepipeline.riot_client import get_match, get_match_ids, get_puuid
+from leaguepipeline.transform import (
+    extract_match_row,
+    extract_participant_rows,
 )
 
 logger = logging.getLogger(__name__)

@@ -9,6 +9,14 @@ Snapshot as of 2026-08-22. Update as items are fixed.
 
 ## Fixed
 
+- **No lint check**: added `ruff` (`test`→ split into `test`/`lint` extras in `pyproject.toml`,
+  pinned `ruff==0.16.4`) and a `ruff check .` step in CI before `pytest`. Surfaced the
+  `seed_items` NameError below, which was fixed as part of adding the check rather than
+  suppressed, so CI starts green.
+- **Confirmed bug — `seed_items` NameError**: `seed_reference_data.py` called
+  `seed_items(conn, items)` at the bottom of the file, but only `seed_champions` was defined —
+  `python -m leaguepipeline.seed_reference_data` raised `NameError` every run. Fixed 2026-08-22:
+  added `seed_items()`, mirroring `seed_champions()`, upserting into the `items` table.
 - **No packaging**: unpinned `requirements.txt` mixing runtime/test deps, no
   declared Python version, no `pyproject.toml`, no `.env.example`, no CI,
   `print`-as-logging, unused imports — fixed 2026-08-22: added `pyproject.toml`
@@ -47,9 +55,6 @@ Snapshot as of 2026-08-22. Update as items are fixed.
 
 ## Open
 
-- **Confirmed bug**: `seed_reference_data.py` calls `seed_items(conn, items)` at the bottom of
-  the file, but only `seed_champions` is defined — `python -m leaguepipeline.seed_reference_data`
-  raises `NameError` every run.
 - **Dead tables**: `schema.sql` still defines `timeline_frames`, `timeline_events`,
   `champion_matchups`, `item_win_rates`, but no code populates them — the extraction/insert
   functions for these were removed (commit `428f06e`) without updating the schema. (The

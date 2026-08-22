@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from leaguepipeline.transform import extract_match_row, extract_participant_rows
 
@@ -45,7 +45,7 @@ def test_extract_match_row_parses_patch_and_timestamp():
         "14.14",
         420,
         1800,
-        datetime.fromtimestamp(1720000000000 / 1000, tz=timezone.utc),
+        datetime.fromtimestamp(1720000000000 / 1000, tz=UTC),
         "EUW1",
     )
 
