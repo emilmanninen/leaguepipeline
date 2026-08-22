@@ -1,6 +1,6 @@
 from unittest.mock import patch, Mock
 
-from src.ingestion import riot_client
+from leaguepipeline import riot_client
 
 
 def make_response(status_code, json_body=None, headers=None):
@@ -17,9 +17,9 @@ def make_response(status_code, json_body=None, headers=None):
     return resp
 
 
-@patch("src.ingestion.riot_client.throttle")
-@patch("src.ingestion.riot_client.time.sleep")
-@patch("src.ingestion.riot_client.requests.get")
+@patch("leaguepipeline.riot_client.throttle")
+@patch("leaguepipeline.riot_client.time.sleep")
+@patch("leaguepipeline.riot_client.requests.get")
 def test_get_match_throttles_again_before_retrying_after_429(mock_get, mock_sleep, mock_throttle):
     rate_limited = make_response(429, headers={"Retry-After": "3"})
     ok = make_response(200, json_body={"info": "match data"})
@@ -35,9 +35,9 @@ def test_get_match_throttles_again_before_retrying_after_429(mock_get, mock_slee
     mock_sleep.assert_called_once_with(3)
 
 
-@patch("src.ingestion.riot_client.throttle")
-@patch("src.ingestion.riot_client.time.sleep")
-@patch("src.ingestion.riot_client.requests.get")
+@patch("leaguepipeline.riot_client.throttle")
+@patch("leaguepipeline.riot_client.time.sleep")
+@patch("leaguepipeline.riot_client.requests.get")
 def test_get_match_throttle_call_count_matches_request_count_across_repeated_429s(
     mock_get, mock_sleep, mock_throttle
 ):
@@ -51,9 +51,9 @@ def test_get_match_throttle_call_count_matches_request_count_across_repeated_429
     assert mock_throttle.call_count == mock_get.call_count == 4
 
 
-@patch("src.ingestion.riot_client.throttle")
-@patch("src.ingestion.riot_client.time.sleep")
-@patch("src.ingestion.riot_client.requests.get")
+@patch("leaguepipeline.riot_client.throttle")
+@patch("leaguepipeline.riot_client.time.sleep")
+@patch("leaguepipeline.riot_client.requests.get")
 def test_get_match_no_retry_still_throttles_once(mock_get, mock_sleep, mock_throttle):
     mock_get.return_value = make_response(200, json_body={"info": "match data"})
 

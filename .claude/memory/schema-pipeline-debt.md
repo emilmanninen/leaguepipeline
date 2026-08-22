@@ -5,9 +5,28 @@ metadata:
   type: project
 ---
 
-Snapshot as of 2026-08-18 (HEAD 5b3a3e2). Update as items are fixed.
+Snapshot as of 2026-08-22. Update as items are fixed.
 
 ## Fixed
+
+- **No packaging**: unpinned `requirements.txt` mixing runtime/test deps, no
+  declared Python version, no `pyproject.toml`, no `.env.example`, no CI,
+  `print`-as-logging, unused imports — fixed 2026-08-22: added `pyproject.toml`
+  (pinned deps, `requires-python = ">=3.12"`, `test` extra for `pytest`),
+  `.env.example`, `.github/workflows/ci.yml` (runs `pytest` on push/PR with
+  dummy env values), swapped `print()` for `logging` in `ingest.py`/
+  `riot_client.py`/`seed_reference_data.py`, removed unused imports (`deque`
+  in `ingest.py`, `json` in `transform.py`). Package renamed from the generic
+  `src/ingestion` to `src/leaguepipeline` (import as `leaguepipeline`, run as
+  `python -m leaguepipeline.ingest`) as part of the same pass. `explore.py`
+  (see below) deleted since it was already broken and flagged safe to remove.
+- **No CI**: previously no GitHub Actions (or other) workflow existed —
+  addressed by the packaging fix above.
+- **`riot_client.py` tests fail without `.env`**: `config.py` still
+  hard-`KeyError`s if `RIOT_API_KEY`/`DATABASE_URL` are unset at import time
+  (unchanged — this is arguably correct fail-fast behavior for required
+  secrets), but CI now sets dummy values so `pytest` runs clean without a
+  real `.env` present.
 
 - **Split schema files**: `crawl_queue` lived in a separate `add_crawl_state.sql` — merged
   into `schema.sql` 2026-08-18 (no FK dependency on the other tables, so nothing functional
@@ -29,19 +48,13 @@ Snapshot as of 2026-08-18 (HEAD 5b3a3e2). Update as items are fixed.
 ## Open
 
 - **Confirmed bug**: `seed_reference_data.py` calls `seed_items(conn, items)` at the bottom of
-  the file, but only `seed_champions` is defined — `python -m src.ingestion.seed_reference_data`
+  the file, but only `seed_champions` is defined — `python -m leaguepipeline.seed_reference_data`
   raises `NameError` every run.
 - **Dead tables**: `schema.sql` still defines `timeline_frames`, `timeline_events`,
   `champion_matchups`, `item_win_rates`, but no code populates them — the extraction/insert
-  functions for these were removed (commit `428f06e`) without updating the schema.
-  [explore.py](../../explore.py) (a leftover scratch script at repo root, not part of the
-  pipeline) still imports the now-deleted functions (`extract_frame_rows`, `extract_event_rows`,
-  `build_participant_id_map`, `insert_frames`, `insert_events`) and would fail on import —
-  safe to delete or should be clearly marked scratch-only.
+  functions for these were removed (commit `428f06e`) without updating the schema. (The
+  leftover `explore.py` scratch script that still imported those deleted functions was
+  removed 2026-08-22 as part of the packaging cleanup.)
 - **Test coverage**: `transform.py` (extract functions) and `riot_client.py` (throttle-per-retry
   behavior only, via mocked `requests`/`throttle`) are unit-tested. `db.py`, `ingest.py`
-  (including the stuck-puuid fix above), `seed_reference_data.py` have none. Note
-  `riot_client.py`'s tests import `config.py`, which hard-fails (`KeyError`) without a `.env`
-  present — untested against a CI environment.
-- **No CI**: no GitHub Actions (or other) workflow in this repo — contrast with
-  `leaguefrontend`, which runs tests on every push/PR.
+  (including the stuck-puuid fix above), `seed_reference_data.py` have none.

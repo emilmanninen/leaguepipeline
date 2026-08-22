@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from src.ingestion.transform import extract_match_row, extract_participant_rows
+from leaguepipeline.transform import extract_match_row, extract_participant_rows
 
 
 def make_match(participants):

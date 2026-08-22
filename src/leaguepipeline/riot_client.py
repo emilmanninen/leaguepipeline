@@ -1,7 +1,10 @@
+import logging
 import requests
-from src.ingestion.config import RIOT_API_KEY
+from leaguepipeline.config import RIOT_API_KEY
 import time
 from collections import deque
+
+logger = logging.getLogger(__name__)
 
 # 100 requests per 2 minutes (120 seconds) is the binding limit
 REQUEST_TIMES = deque()
@@ -19,7 +22,7 @@ def get_puuid(game_name: str, tag_line: str, region: str = "europe") -> str:
         resp = requests.get(url, headers=HEADERS)
         if resp.status_code == 429:
             retry_after = int(resp.headers.get("Retry-After", 5))
-            print(f"429 on get_puuid, sleeping {retry_after}s (attempt {attempt + 1}/5)")
+            logger.warning("429 on get_puuid, sleeping %ss (attempt %d/5)", retry_after, attempt + 1)
             time.sleep(retry_after)
             continue
         resp.raise_for_status()
@@ -35,7 +38,7 @@ def get_match_ids(puuid: str, region: str = "europe", count: int = 5) -> list[st
         resp = requests.get(url, headers=HEADERS, params={"count": count})
         if resp.status_code == 429:
             retry_after = int(resp.headers.get("Retry-After", 5))
-            print(f"429 on get_match_ids, sleeping {retry_after}s (attempt {attempt + 1}/5)")
+            logger.warning("429 on get_match_ids, sleeping %ss (attempt %d/5)", retry_after, attempt + 1)
             time.sleep(retry_after)
             continue
         resp.raise_for_status()
@@ -51,7 +54,7 @@ def get_match(match_id: str, region: str = "europe") -> dict:
         resp = requests.get(url, headers=HEADERS)
         if resp.status_code == 429:
             retry_after = int(resp.headers.get("Retry-After", 5))
-            print(f"429 on get_match, sleeping {retry_after}s (attempt {attempt + 1}/5)")
+            logger.warning("429 on get_match, sleeping %ss (attempt %d/5)", retry_after, attempt + 1)
             time.sleep(retry_after)
             continue
         resp.raise_for_status()
@@ -76,7 +79,7 @@ def throttle():
     if len(REQUEST_TIMES) >= MAX_REQUESTS:
         sleep_time = WINDOW_SECONDS - (now - REQUEST_TIMES[0]) + 0.5
         if sleep_time > 0:
-            print(f"Rate limit approaching, sleeping {sleep_time:.1f}s")
+            logger.info("Rate limit approaching, sleeping %.1fs", sleep_time)
             time.sleep(sleep_time)
             now = time.time()
             while REQUEST_TIMES and now - REQUEST_TIMES[0] > WINDOW_SECONDS:

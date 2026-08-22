@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-import json
 
 def extract_match_row(match_id: str, match_json: dict) -> tuple:
     info = match_json["info"]
