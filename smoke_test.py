@@ -1,7 +1,7 @@
 # smoke_test.py — manual sanity check, not part of the real pipeline
 import json
-from src.ingestion.riot_client import get_puuid, get_match_ids, get_match
-from src.ingestion.db import get_connection
+from leaguepipeline.riot_client import get_puuid, get_match_ids, get_match
+from leaguepipeline.db import get_connection
 
 puuid = get_puuid("your_riot_id", "1234", region="europe")
 print("PUUID:", puuid)

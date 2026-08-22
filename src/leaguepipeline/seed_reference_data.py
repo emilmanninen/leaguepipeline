@@ -1,5 +1,9 @@
+import logging
+
 import requests
-from src.ingestion.db import get_connection
+from leaguepipeline.db import get_connection
+
+logger = logging.getLogger(__name__)
 
 def get_latest_version():
     versions = requests.get("https://ddragon.leagueoflegends.com/api/versions.json").json()
@@ -31,16 +35,18 @@ def seed_champions(conn, champions):
     cur.close()
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+
     version = get_latest_version()
-    print("Using Data Dragon version:", version)
+    logger.info("Using Data Dragon version: %s", version)
 
     champions = fetch_champions(version)
     items = fetch_items(version)
-    print(f"Fetched {len(champions)} champions, {len(items)} items")
+    logger.info("Fetched %d champions, %d items", len(champions), len(items))
 
     conn = get_connection()
     seed_champions(conn, champions)
     seed_items(conn, items)
     conn.close()
 
-    print("Done seeding champions and items")
+    logger.info("Done seeding champions and items")
